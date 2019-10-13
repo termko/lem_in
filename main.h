@@ -31,12 +31,6 @@ typedef struct	s_node
 	int				link_count;
 	struct s_node	*next;
 }				t_node;
-typedef struct	s_ant
-{
-	t_node		*curr_node;
-	t_node		*next_node;
-	int			at_end;
-}				t_ant;
 typedef struct	s_stack
 {
 	int			cap;
@@ -44,11 +38,25 @@ typedef struct	s_stack
 	int			size;
 	int			store[0];
 }				t_stack;
+typedef struct	s_path
+{
+	t_node			**path;
+	int			ants;
+	int			ant_max;
+	struct s_path		*next;
+}		t_path;
+typedef struct	s_ant
+{
+	t_path		*path;
+	int		curr_node;
+	int			at_end;
+}				t_ant;
 typedef struct	s_lemin
 {
 	t_node		*nodes;
 	t_node		*start_node;
 	t_node		*end_node;
+	t_path		*paths;
 	t_ant		**ants;
 	char		**names;
 	int			**edges;

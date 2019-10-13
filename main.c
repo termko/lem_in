@@ -123,6 +123,7 @@ int		check_comment(t_lemin *lemin, char *buff)
 void	init_edges(t_lemin *lemin)
 {
 	int	i;
+	int	j;
 	int	**arr;
 
 	check_malloc(arr = (int**)malloc(sizeof(int*) * lemin->node_count));
@@ -130,7 +131,12 @@ void	init_edges(t_lemin *lemin)
 	while (i < lemin->node_count)
 	{
 		check_malloc(arr[i] = (int*)malloc(sizeof(int) * lemin->node_count));
-		ft_bzero(arr[i], lemin->node_count * sizeof(int));
+		j = 0;
+		while (j < lemin->node_count)
+		{
+			arr[i][j] = 0;
+			j++;
+		}
 		i++;
 	}
 	lemin->edges = arr;
@@ -256,9 +262,7 @@ void	fill_names(t_lemin *lemin)
 void	read_map(t_lemin *lemin)
 {
 	char	*buff;
-	int		i;
 
-	i = 0;
 	while (1)
 	{
 		if (get_next_line(STDIN_FILENO, &buff) <= 0)
@@ -283,6 +287,7 @@ t_lemin	*init_lemin(void)
 	lemin->ant_count = 0;
 	lemin->start = 0;
 	lemin->end = 0;
+	lemin->paths = NULL;
 	lemin->edges = NULL;
 	lemin->names = NULL;
 	lemin->ants = NULL;
@@ -303,8 +308,8 @@ void	init_ants(t_lemin *lemin)
 	while (i < lemin->ant_count)
 	{
 		check_malloc(ants[i] = (t_ant*)malloc(sizeof(t_ant*)));
-		ants[i]->curr_node = lemin->start_node;
-		ants[i]->next_node = NULL;
+		ants[i]->path = NULL;
+		ants[i]->curr_node = 0;
 		ants[i]->at_end = 0;
 		i++;
 	}
@@ -391,42 +396,84 @@ t_node	*find_node(t_lemin *lemin, char *name)
 	return (ret);
 }
 
-t_node	**backtrack(t_lemin *lemin, t_stack **stack, int i)
+t_path	*new_path(t_lemin *lemin, int count)
 {
-	t_node	**path;
+	t_path	*new;
+
+	if (!lemin->paths)
+	{
+		check_malloc(lemin->paths = (t_path*)malloc(sizeof(t_path)));
+		new = lemin->paths;
+	}
+	else
+	{
+		new = lemin->paths;
+		while (new->next)
+			new = new->next;
+		check_malloc(new->next = (t_path*)malloc(sizeof(t_path)));
+		new = new->next;
+	}
+	check_malloc(new->path = (t_node**)malloc(sizeof(t_node*) * (count + 1)));
+	new->path[count] = NULL;
+	new->ants = 0;
+	new->ant_max = count - 1;
+	new->next = NULL;
+	return (new);
+}
+
+void	clear_visited(t_lemin *lemin)
+{
+	int	i;
+
+	i = 0;
+	while (i < lemin->node_count)
+	{
+		lemin->visited[i] = 0;
+		i++;
+	}
+}
+
+t_path	*backtrack(t_lemin *lemin, t_stack **stack, int i)
+{
+	t_path	*path;
 	int		count;
 	int		j;
 	int		prev;
 
 	del_stack(stack);
+	clear_visited(lemin);
 	count = count_backtrack(lemin, i);
-	check_malloc(path = (t_node**)malloc(sizeof(t_node*) * (count + 1)));
-	j = 0;
-	while (j < count - 2)
+	path = new_path(lemin, count);
+	path->path[count - 1] = find_node(lemin, lemin->names[i]);
+	j = count - 2;
+	while (j >= 0)
 	{
+		lemin->visited[i] = 1;
 		prev = lemin->edges[i][i] - 1;
-		if ((find_node(lemin, lemin->names[prev]))->start)
+		if ((path->path[j] = find_node(lemin, lemin->names[prev])) == lemin->start_node)
 			return (path);
-		check_malloc(path[j] = find_node(lemin, lemin->names[prev]));
 		clear_prev(lemin, prev, i);
 		i = prev;
+		j--;
 	}
 	return (path);
 }
 
-t_node	**bfs(t_lemin *lemin, t_stack *stack, int i)
+t_path	*bfs(t_lemin *lemin, t_stack *stack, int i)
 {
 	int		j;
 	int		x;
+	t_node		*node;
 
 	j = 0;
+	node = find_node(lemin, lemin->names[i]);
 	while (j < lemin->node_count)
 	{
-		if (i != j && lemin->edges[i][j] > 0 && !lemin->visited[j])
+		if (i != j && lemin->edges[i][j] > 0 && (!lemin->visited[j] || node->start || node->end))
 		{
 			lemin->edges[j][j] = i + 1;
 			if (!ft_strcmp(lemin->names[j], lemin->end_node->name))
-				return (backtrack(lemin, &stack, i));
+				return (backtrack(lemin, &stack, j));
 			lemin->visited[j] = 1;
 			st_push(stack, j);
 		}
@@ -438,27 +485,140 @@ t_node	**bfs(t_lemin *lemin, t_stack *stack, int i)
 	return (bfs(lemin, stack, x));
 }
 
+void	init_visited(t_lemin *lemin)
+{
+	int	i;
+
+	if (!lemin->visited)
+		check_malloc(lemin->visited = (int*)malloc(sizeof(int) * lemin->node_count));
+	i = 0;
+	while (i < lemin->node_count)
+	{
+		lemin->visited[i] = 0;
+		i++;
+	}
+}
+
+void	clear_edges(t_lemin *lemin)
+{
+	int i;
+
+	i = 0;
+	while (i < lemin->node_count)
+	{
+		lemin->edges[i][i] = 0;
+		i++;
+	}
+}
+
 void	max_flow(t_lemin *lemin)
 {
-	t_node	**path;
 	t_stack	*stack;
 	int		ind;
 
-	path = NULL;
 	check_malloc(stack = new_stack(lemin->node_count));
-	if (!lemin->visited)
-		check_malloc(lemin->visited = (int*)malloc(sizeof(int) * lemin->node_count));
-	ft_bzero(lemin->visited, sizeof(int) * lemin->node_count);
+	init_visited(lemin);
 	ind = index_of_node(lemin, lemin->start_node->name);
 	lemin->visited[ind] = 1;
-	path = bfs(lemin, stack, ind);
-	int i;
-	i = 0;
-	while (path[i])
+	while (bfs(lemin, stack, ind))
 	{
-		printf("%s\n", path[i]->name);
-		i++;
+		check_malloc(stack = new_stack(lemin->node_count));
+		clear_edges(lemin);
 	}
+	if (!lemin->paths)
+		error_msg("ERROR\n");
+}
+
+int		ant_step(t_lemin *lemin, int ind, int flag)
+{
+	t_path	*path;
+	t_ant	*ant;
+	int	node;
+
+	ant = lemin->ants[ind];
+	path = ant->path;
+	node = ant->curr_node;
+	if (path->path[node + 1]->ants && !path->path[node + 1]->end)
+		return (0);
+	path->path[node + 1]->ants++;
+	path->path[node]->ants--;
+	ant->curr_node++;
+	if (path->path[ant->curr_node]->end)
+	{
+		path->ants--;
+		ant->at_end = 1;
+	}
+	if (flag)
+		printf(" ");
+	printf("L%d-%s", ind + 1, path->path[ant->curr_node]->name);
+	return (1);
+}
+
+void	step(t_lemin *lemin)
+{
+	int	i;
+	int	end;
+	int	flag;
+
+	end = 0;
+	while (!end)
+	{
+		flag = 0;
+		end = 1;
+		i = 0;
+		while (i < lemin->ant_count)
+		{
+			if (!lemin->ants[i]->at_end)
+			{
+				if (ant_step(lemin, i, flag))
+				{
+					end = 0;
+					flag = 1;
+				}
+			}
+			i++;
+		}
+		if (!end)
+			printf("\n");
+	}
+}
+
+void	cycle(t_lemin *lemin)
+{
+	int	i;
+	int	j;
+	t_path	*path;
+
+	i = 0;
+	path = lemin->paths;
+	while (i < lemin->ant_count)
+	{
+		if (lemin->ant_count - i < path->ant_max)
+		{
+			path->ants = lemin->ant_count - i;
+			while (i < lemin->ant_count)
+			{
+				lemin->ants[i]->path = path;
+				i++;
+			}
+		}
+		else
+		{
+			j = 0;
+			path->ants = path->ant_max;
+			while (j < path->ant_max)
+			{
+				lemin->ants[i + j]->path = path;
+				j++;
+			}
+			i += j;
+		}
+		if (!path->next)
+			path = lemin->paths;
+		else
+			path = path->next;
+	}
+	step(lemin);
 }
 
 int		main(void)
@@ -469,5 +629,5 @@ int		main(void)
 	read_map(lemin);
 	init_ants(lemin);
 	max_flow(lemin);
-//	cycle(lemin);
+	cycle(lemin);
 }

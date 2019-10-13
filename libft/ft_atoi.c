@@ -15,15 +15,10 @@
 static int	ft_check_func(long ret, int count, int flag)
 {
 	int i;
-	int flagtmp;
 
 	i = 0;
-	flagtmp = 0;
 	if (ret < 0)
-	{
 		ret *= -1;
-		flagtmp = 1;
-	}
 	while (ret)
 	{
 		ret /= 10;

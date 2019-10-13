@@ -41,7 +41,7 @@ LIBMAKE = ar cr
 all:		$(NAME)
 
 $(NAME):
-	@$(CC) $(CFLAGS) -c $(SRC) -I $(HDR)
+	@$(CC) $(CFLAGS) -c $(SRC)
 	@$(LIBMAKE) $(NAME) $(OBJ)
 
 clean:

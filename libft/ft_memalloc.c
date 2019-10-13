@@ -19,7 +19,7 @@ void	*ft_memalloc(size_t size)
 	if (!(tmp = malloc(sizeof(size_t) * size)))
 		return (NULL);
 	while (size)
-		*(unsigned char*)(tmp + --size) = (unsigned char)NULL;
-	*(unsigned char*)tmp = (unsigned char)NULL;
+		*(unsigned char*)(tmp + --size) = *(unsigned char*)0;
+	*(unsigned char*)tmp = *(unsigned char*)0;
 	return (tmp);
 }
