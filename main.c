@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/06 18:11:05 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/11 07:49:19 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/15 02:33:43 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -253,6 +253,10 @@ void	fill_names(t_lemin *lemin)
 	while (tmp)
 	{
 		check_malloc(lemin->names[i] = ft_strdup(tmp->name));
+		if (tmp->start)
+			lemin->start_index = i;
+		else if (tmp->end)
+			lemin->end_index = i;
 		i++;
 		tmp = tmp->next;
 	}
@@ -287,7 +291,11 @@ t_lemin	*init_lemin(void)
 	lemin->ant_count = 0;
 	lemin->start = 0;
 	lemin->end = 0;
+	lemin->start_index = 0;
+	lemin->end_index = 0;
 	lemin->paths = NULL;
+	lemin->fastest = NULL;
+	lemin->visited = NULL;
 	lemin->edges = NULL;
 	lemin->names = NULL;
 	lemin->ants = NULL;
@@ -317,54 +325,17 @@ void	init_ants(t_lemin *lemin)
 	lemin->ants = ants;
 }
 
-t_stack	*new_stack(int cap)
-{
-	t_stack	*ret;
-
-	check_malloc(ret = malloc(sizeof(t_stack) + cap * sizeof(int)));
-	ret->cap = cap;
-	ret->start = 0;
-	ret->size = 0;
-	return (ret);
-}
-
-void	st_push(t_stack *stack, int x)
-{
-	if (stack->size >= stack->cap)
-		return ;
-	stack->store[(stack->start + stack->size) % stack->cap] = x;
-	stack->size++;
-}
-
-int		st_pop(t_stack *stack)
-{
-	int	x;
-
-	if (!stack->size)
-		return (-1);
-	x = stack->store[stack->start];
-	stack->start++;
-	stack->size--;
-	return (x);
-}
-
-void	del_stack(t_stack **stack)
-{
-	free(*stack);
-	*stack = NULL;
-}
-
 int		count_backtrack(t_lemin *lemin, int i)
 {
 	int	count;
-	int	start;
 
-	start = index_of_node(lemin, lemin->start_node->name);
 	count = 1;
-	while (i != start)
+	while (i != lemin->start_index)
 	{
 		count++;
 		i = lemin->edges[i][i] - 1;
+		if (i < 0)
+			return (-1);
 	}
 	return (count);
 }
@@ -433,56 +404,105 @@ void	clear_visited(t_lemin *lemin)
 	}
 }
 
-t_path	*backtrack(t_lemin *lemin, t_stack **stack, int i)
+t_path	*backtrack(t_lemin *lemin)
 {
 	t_path	*path;
 	int		count;
+	int		i;
 	int		j;
 	int		prev;
 
-	del_stack(stack);
 	clear_visited(lemin);
-	count = count_backtrack(lemin, i);
+	count = count_backtrack(lemin, lemin->end_index);
+	if (count < 0)
+		return (NULL);
 	path = new_path(lemin, count);
-	path->path[count - 1] = find_node(lemin, lemin->names[i]);
-	j = count - 2;
-	while (j >= 0)
+	path->path[count - 1] = lemin->end_node;
+	i = count - 2;
+	j = lemin->end_index;
+	while (i >= 0)
 	{
-		lemin->visited[i] = 1;
-		prev = lemin->edges[i][i] - 1;
-		if ((path->path[j] = find_node(lemin, lemin->names[prev])) == lemin->start_node)
+		prev = lemin->edges[j][j] - 1;
+		lemin->edges[prev][j] = 0;
+		if (lemin->edges[j][prev] == -1)
+			lemin->edges[j][prev] = 0;
+		else if (lemin->edges[j][prev])
+			lemin->edges[j][prev] = -1;
+		path->path[i] = find_node(lemin, lemin->names[prev]);
+		if (path->path[i] == lemin->start_node)
 			return (path);
-		clear_prev(lemin, prev, i);
-		i = prev;
-		j--;
+		clear_prev(lemin, prev, j);
+		j = prev;
+		i--;
 	}
 	return (path);
 }
 
-t_path	*bfs(t_lemin *lemin, t_stack *stack, int i)
+void	init_fastest(t_lemin *lemin)
 {
-	int		j;
-	int		x;
-	t_node		*node;
+	int		i;
 
-	j = 0;
-	node = find_node(lemin, lemin->names[i]);
-	while (j < lemin->node_count)
+	if (!lemin->fastest)
+		check_malloc(lemin->fastest = (int*)malloc(sizeof(int) *
+					lemin->node_count));
+	i = 0;
+	while (i < lemin->node_count)
 	{
-		if (i != j && lemin->edges[i][j] > 0 && (!lemin->visited[j] || node->start || node->end))
-		{
-			lemin->edges[j][j] = i + 1;
-			if (!ft_strcmp(lemin->names[j], lemin->end_node->name))
-				return (backtrack(lemin, &stack, j));
-			lemin->visited[j] = 1;
-			st_push(stack, j);
-		}
-		j++;
+		lemin->fastest[i] = lemin->node_count + 1;
+		i++;
 	}
-	if (stack->size == 0)
-		return (NULL);
-	x = st_pop(stack);
-	return (bfs(lemin, stack, x));
+	lemin->fastest[lemin->start_index] = 0;
+}
+
+int		least_dist(t_lemin *lemin)
+{
+	int		i;
+	int		least;
+	int		min;
+
+	i = 0;
+	min = lemin->node_count + 1;
+	least = -1;
+	while (i < lemin->node_count)
+	{
+		if (lemin->fastest[i] < min && !lemin->visited[i])
+		{
+			min = lemin->fastest[i];
+			least = i;
+		}
+		i++;
+	}
+	return (least);
+}
+
+t_path	*dijkstra(t_lemin *lemin)
+{
+	int		i;
+	int		j;
+	int		dist;
+
+	init_fastest(lemin);
+	while (1)
+	{
+		if ((i = least_dist(lemin)) < 0)
+			break ;
+		lemin->visited[i] = 1;
+		j = 0;
+		while (j < lemin->node_count)
+		{
+			if (i != j && lemin->edges[i][j] && !lemin->visited[j])
+			{
+				dist = lemin->edges[i][j] + lemin->fastest[i];
+				if (lemin->fastest[j] > dist)
+				{
+					lemin->edges[j][j] = i + 1;
+					lemin->fastest[j] = dist;
+				}
+			}
+			j++;
+		}
+	}
+	return (backtrack(lemin));
 }
 
 void	init_visited(t_lemin *lemin)
@@ -511,29 +531,87 @@ void	clear_edges(t_lemin *lemin)
 	}
 }
 
-void	max_flow(t_lemin *lemin)
+void	check_bottlenecks(t_lemin *lemin)
 {
-	t_stack	*stack;
+	int		i;
+	int		j;
+
+	i = 0;
+	while (i < lemin->node_count)
+	{
+		j = 0;
+		while (j < lemin->node_count)
+		{
+			if (lemin->edges[i][j])
+			{
+				lemin->edges[i][j] = 1;
+				lemin->edges[j][i] = 1;
+			}
+			j++;
+		}
+		i++;
+	}
+}
+
+void	free_paths(t_lemin *lemin)
+{
+	t_path	*path;
+
+	while (lemin->paths)
+	{
+		path = lemin->paths->next;
+		free(lemin->paths->path);
+		free(lemin->paths);
+		lemin->paths = path;
+	}
+	lemin->paths = NULL;
+}
+
+int		check_flow(t_lemin *lemin)
+{
+	t_path	*path;
+	int		flow;
+
+	flow = 0;
+	path = lemin->paths;
+	while (path)
+	{
+		flow += path->ant_max;
+		if (flow >= lemin->ant_count)
+			return (1);
+		path = path->next;
+	}
+	return (0);
+}
+
+void	max_flow(t_lemin *lemin, int flag)
+{
 	int		ind;
 
-	check_malloc(stack = new_stack(lemin->node_count));
+	ind = lemin->start_index;
 	init_visited(lemin);
-	ind = index_of_node(lemin, lemin->start_node->name);
-	lemin->visited[ind] = 1;
-	while (bfs(lemin, stack, ind))
+	while (dijkstra(lemin))
 	{
-		check_malloc(stack = new_stack(lemin->node_count));
+		init_visited(lemin);
 		clear_edges(lemin);
+		if (flag && check_flow(lemin))
+			return ;
 	}
 	if (!lemin->paths)
 		error_msg("ERROR\n");
+	if (!flag)
+	{
+		free_paths(lemin);
+		check_bottlenecks(lemin);
+		max_flow(lemin, 1);
+	}
 }
 
 int		ant_step(t_lemin *lemin, int ind, int flag)
 {
 	t_path	*path;
 	t_ant	*ant;
-	int	node;
+	int		node;
 
 	ant = lemin->ants[ind];
 	path = ant->path;
@@ -628,6 +706,6 @@ int		main(void)
 	lemin = init_lemin();
 	read_map(lemin);
 	init_ants(lemin);
-	max_flow(lemin);
+	max_flow(lemin, 0);
 	cycle(lemin);
 }

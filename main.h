@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/06 18:11:38 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/11 07:30:39 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/15 02:28:03 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,8 @@ typedef struct	s_node
 typedef struct	s_stack
 {
 	int			cap;
-	int			start;
 	int			size;
-	int			store[0];
+	int			*store;
 }				t_stack;
 typedef struct	s_path
 {
@@ -60,10 +59,13 @@ typedef struct	s_lemin
 	t_ant		**ants;
 	char		**names;
 	int			**edges;
+	int			*fastest;
 	int			*visited;
 	int			node_count;
 	int			link_count;
 	int			ant_count;
+	int			start_index;
+	int			end_index;
 	int			comment;
 	int			start;
 	int			end;
