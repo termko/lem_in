@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/06 18:11:05 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/15 02:33:43 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/15 06:54:48 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,7 @@ int		split_check(char **split, int count)
 
 void	split_free(char ***split)
 {
-	(void)split;
-	/*
-	char	*tmp;
+	char	**tmp;
 	int		i;
 
 	tmp = *split;
@@ -60,7 +58,13 @@ void	split_free(char ***split)
 		i++;
 	}
 	free(tmp);
-	*/
+}
+
+int		coord_check(t_v2 loc, char **split)
+{
+	if (loc.x == ft_atoi(split[1]) && loc.y == ft_atoi(split[2]))
+		return (1);
+	return (0);
 }
 
 void	init_node(t_lemin *lemin, char **split)
@@ -76,10 +80,14 @@ void	init_node(t_lemin *lemin, char **split)
 		node = lemin->nodes;
 		while (node->next)
 		{
-			if (!ft_strcmp(node->name, split[0]))
+			if (!ft_strcmp(node->name, split[0]) ||
+					coord_check(node->loc, split))
 				error_msg("ERROR\n");
 			node = node->next;
 		}
+		if (!ft_strcmp(node->name, split[0]) ||
+				coord_check(node->loc, split))
+			error_msg("ERROR\n");
 		check_malloc(node->next = (t_node*)malloc(sizeof(t_node)));
 		node = node->next;
 	}
@@ -90,12 +98,16 @@ void	init_node(t_lemin *lemin, char **split)
 	node->link_count = 0;
 	if (lemin->end)
 	{
+		if (lemin->end_node)
+			error_msg("ERROR\n");
 		lemin->end_node = node;
 		lemin->end = 0;
 		node->end = 1;
 	}
 	else if (lemin->start)
 	{
+		if (lemin->start_node)
+			error_msg("ERROR\n");
 		node->ants = lemin->ant_count;
 		node->start = 1;
 		lemin->start = 0;
@@ -175,11 +187,28 @@ void	update_edges(t_lemin *lemin, char **split)
 	lemin->edges[j][i] = 1;
 }
 
+int		check_numerical(char *buff)
+{
+	int		i;
+
+	i = 0;
+	while (buff[i])
+	{
+		if (!ft_isdigit(buff[i]))
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
 int		check_first(t_lemin *lemin, char *buff)
 {
 	if (check_comment(lemin, buff))
 		return (0);
-	if ((lemin->ant_count = ft_atoi(buff)) < 0)
+	if (check_numerical(buff))
+		error_msg("ERROR\n");
+	lemin->ant_count = ft_atoi(buff);
+	if (!lemin->ant_count)
 		error_msg("ERROR\n");
 	lemin->part++;
 	return (0);
@@ -200,7 +229,8 @@ int		check_second(t_lemin *lemin, char *buff)
 		lemin->part++;
 		return (check_third(lemin, buff));
 	}
-	if (split[0][0] == 'L')
+	if (split[0][0] == 'L' || check_numerical(split[1]) ||
+			check_numerical(split[2]))
 		error_msg("ERROR\n");
 	lemin->node_count++;
 	init_node(lemin, split);
@@ -222,6 +252,8 @@ int		check_third(t_lemin *lemin, char *buff)
 			error_msg("ERROR\n");
 		return (1);
 	}
+	if (!ft_strcmp(split[0], split[1]))
+		error_msg("ERROR\n");
 	lemin->link_count++;
 	update_edges(lemin, split);
 	split_free(&split);
@@ -263,18 +295,78 @@ void	fill_names(t_lemin *lemin)
 	lemin->names[i] = NULL;
 }
 
+void	append_str(char *str, char c)
+{
+	int		i;
+
+	i = 0;
+	while (str[i])
+		i++;
+	str[i] = c;
+}
+
+char	*read_line(void)
+{
+	char	*buff;
+	char	c;
+
+	check_malloc(buff = ft_strnew(1024));
+	while (1)
+	{
+		read(STDIN_FILENO, &c, 1);
+		if (c == '\0')
+		{
+			free(buff);
+			return (NULL);
+		}
+		if (c == '\n')
+		{
+			if (!buff[0])
+			{
+				free(buff);
+				return (NULL);
+			}
+			return (buff);
+		}
+		append_str(buff, c);
+	}
+}
+
+void	append_out(t_lemin *lemin, char *str)
+{
+	t_out	*out;
+
+	if (!lemin->out)
+	{
+		check_malloc(lemin->out = (t_out*)malloc(sizeof(t_out)));
+		out = lemin->out;
+	}
+	else
+	{
+		out = lemin->out;
+		while (out->next)
+			out = out->next;
+		check_malloc(out->next = (t_out*)malloc(sizeof(t_out)));
+		out = out->next;
+	}
+	check_malloc(out->str = ft_strdup(str));
+	out->next = NULL;
+}
+
 void	read_map(t_lemin *lemin)
 {
 	char	*buff;
 
 	while (1)
 	{
-		if (get_next_line(STDIN_FILENO, &buff) <= 0)
+		if (!(buff = read_line()))
 			break ;
 		if (check_str(lemin, buff))
 			break ;
+		append_out(lemin, buff);
+		free(buff);
 	}
-	if (lemin->node_count < 2 || lemin->link_count < 1 || lemin->ant_count < 0)
+	if (lemin->node_count < 2 || lemin->link_count < 1 || (buff = read_line()))
 		error_msg("ERROR\n");
 	fill_names(lemin);
 }
@@ -294,6 +386,7 @@ t_lemin	*init_lemin(void)
 	lemin->start_index = 0;
 	lemin->end_index = 0;
 	lemin->paths = NULL;
+	lemin->out = NULL;
 	lemin->fastest = NULL;
 	lemin->visited = NULL;
 	lemin->edges = NULL;
@@ -307,9 +400,11 @@ t_lemin	*init_lemin(void)
 
 void	init_ants(t_lemin *lemin)
 {
-	t_ant	**ants;
-	int		i;
+	t_ant			**ants;
+	uintmax_t		i;
 
+	if (lemin->ant_count + 1 < lemin->ant_count)
+		error_msg("ERROR\n");
 	check_malloc(ants = (t_ant**)malloc(sizeof(t_ant*) *
 				(lemin->ant_count + 1)));
 	i = 0;
@@ -387,6 +482,7 @@ t_path	*new_path(t_lemin *lemin, int count)
 	check_malloc(new->path = (t_node**)malloc(sizeof(t_node*) * (count + 1)));
 	new->path[count] = NULL;
 	new->ants = 0;
+	check_malloc(new->stepped = (int*)malloc(sizeof(int) * count));
 	new->ant_max = count - 1;
 	new->next = NULL;
 	return (new);
@@ -569,8 +665,8 @@ void	free_paths(t_lemin *lemin)
 
 int		check_flow(t_lemin *lemin)
 {
-	t_path	*path;
-	int		flow;
+	t_path			*path;
+	uintmax_t	flow;
 
 	flow = 0;
 	path = lemin->paths;
@@ -616,9 +712,11 @@ int		ant_step(t_lemin *lemin, int ind, int flag)
 	ant = lemin->ants[ind];
 	path = ant->path;
 	node = ant->curr_node;
-	if (path->path[node + 1]->ants && !path->path[node + 1]->end)
+	if (path->stepped[node + 1] || (path->path[node + 1]->ants &&
+				!path->path[node + 1]->end))
 		return (0);
 	path->path[node + 1]->ants++;
+	path->stepped[node + 1] = 1;
 	path->path[node]->ants--;
 	ant->curr_node++;
 	if (path->path[ant->curr_node]->end)
@@ -632,11 +730,29 @@ int		ant_step(t_lemin *lemin, int ind, int flag)
 	return (1);
 }
 
+void	clear_stepped(t_lemin *lemin)
+{
+	int		i;
+	t_path	*path;
+
+	path = lemin->paths;
+	while (path)
+	{
+		i = 0;
+		while (path->path[i])
+		{
+			path->stepped[i] = 0;
+			i++;
+		}
+		path = path->next;
+	}
+}
+
 void	step(t_lemin *lemin)
 {
-	int	i;
-	int	end;
-	int	flag;
+	uintmax_t	i;
+	int			end;
+	int			flag;
 
 	end = 0;
 	while (!end)
@@ -644,6 +760,7 @@ void	step(t_lemin *lemin)
 		flag = 0;
 		end = 1;
 		i = 0;
+		clear_stepped(lemin);
 		while (i < lemin->ant_count)
 		{
 			if (!lemin->ants[i]->at_end)
@@ -663,9 +780,9 @@ void	step(t_lemin *lemin)
 
 void	cycle(t_lemin *lemin)
 {
-	int	i;
-	int	j;
-	t_path	*path;
+	uintmax_t	i;
+	uintmax_t	j;
+	t_path		*path;
 
 	i = 0;
 	path = lemin->paths;
@@ -699,13 +816,35 @@ void	cycle(t_lemin *lemin)
 	step(lemin);
 }
 
+void	check_read(t_lemin *lemin)
+{
+	if (!lemin->start_node || !lemin->end_node)
+		error_msg("ERROR\n");
+}
+
+void	print_map(t_lemin *lemin)
+{
+	t_out	*out;
+
+	out = lemin->out;
+	while (out)
+	{
+		printf("%s\n", out->str);
+		out = out->next;
+	}
+	printf("\n");
+}
+
 int		main(void)
 {
 	t_lemin	*lemin;
 
 	lemin = init_lemin();
 	read_map(lemin);
+	check_read(lemin);
 	init_ants(lemin);
 	max_flow(lemin, 0);
+	print_map(lemin);
 	cycle(lemin);
+	return (0);
 }
