@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/06 18:11:38 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/15 06:39:56 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/15 08:16:54 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include "libft/libft.h"
+# include <stdio.h> // DELETE ME
 
 typedef struct	s_v2
 {
@@ -40,12 +41,12 @@ typedef struct	s_path
 	uintmax_t			ants;
 	uintmax_t			ant_max;
 	struct s_path		*next;
-}		t_path;
+}				t_path;
 
 typedef struct	s_ant
 {
 	t_path		*path;
-	int		curr_node;
+	int			curr_node;
 	int			at_end;
 }				t_ant;
 
@@ -78,5 +79,19 @@ typedef struct	s_lemin
 	int				part;
 }				t_lemin;
 
+t_lemin			*init_lemin(void);
+void			init_ants(t_lemin *lemin);
+void			init_node(t_lemin *lemin, char **split);
+t_node			*get_node(t_lemin *lemin, char **split);
+int				check_first(t_lemin *lemin, char *buff);
+int				check_second(t_lemin *lemin, char *buff);
 int				check_third(t_lemin *lemin, char *buff);
+void			check_malloc(void *addr);
+void			error_msg(char *msg);
+int				split_check(char **split, int count);
+void			split_free(char ***split);
+int				coord_check(t_v2 loc, char **split);
+void			update_edges(t_lemin *lemin, char **split);
+void			fill_names(t_lemin *lemin);
+void			read_map(t_lemin *lemin);
 #endif
