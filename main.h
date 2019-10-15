@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/06 18:11:38 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/15 08:16:54 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/15 10:19:07 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,4 +94,24 @@ int				coord_check(t_v2 loc, char **split);
 void			update_edges(t_lemin *lemin, char **split);
 void			fill_names(t_lemin *lemin);
 void			read_map(t_lemin *lemin);
+void			fill_names(t_lemin *lemin);
+t_node			*find_node(t_lemin *lemin, char *name);
+void			clear_visited(t_lemin *lemin);
+void			clear_prev(t_lemin *lemin, int prev, int i);
+t_path			*backtrack(t_lemin *lemin);
+t_path			*new_path(t_lemin *lemin, int count);
+int				count_backtrack(t_lemin *lemin, int i);
+t_path			*new_path(t_lemin *lemin, int count);
+t_path			*dijkstra(t_lemin *lemin);
+void			max_flow(t_lemin *lemin, int flag);
+void			cycle(t_lemin *lemin);
+void			clear_stepped(t_lemin *lemin);
+void			print_map(t_lemin *lemin);
+void			check_read(t_lemin *lemin);
+void			free_lemin(t_lemin **lemin);
+void			free_paths(t_lemin *lemin);
+void			free_nodes(t_lemin *lemin);
+void			free_out(t_lemin *lemin);
+void			free_ants(t_lemin *lemin);
+void			free_names(t_lemin *lemin);
 #endif

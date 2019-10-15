@@ -1,28 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   free_lemin.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/06 18:11:05 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/15 10:19:27 by ydavis           ###   ########.fr       */
+/*   Created: 2019/10/15 09:48:15 by ydavis            #+#    #+#             */
+/*   Updated: 2019/10/15 09:49:48 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-int		main(void)
+void	free_edges(t_lemin *lemin)
 {
-	t_lemin	*lemin;
+	int		i;
 
-	lemin = init_lemin();
-	read_map(lemin);
-	check_read(lemin);
-	init_ants(lemin);
-	max_flow(lemin, 0);
-	print_map(lemin);
-	cycle(lemin);
-	free_lemin(&lemin);
-	return (0);
+	i = 0;
+	while (i < lemin->node_count)
+	{
+		free(lemin->edges[i]);
+		i++;
+	}
+	free(lemin->edges);
+}
+
+void	free_lemin(t_lemin **lemin)
+{
+	free_nodes(*lemin);
+	free_out(*lemin);
+	free_paths(*lemin);
+	free_ants(*lemin);
+	free_names(*lemin);
+	free_edges(*lemin);
+	free((*lemin)->visited);
+	free((*lemin)->fastest);
+	free(*lemin);
 }
