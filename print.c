@@ -6,11 +6,23 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/15 10:01:45 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/15 10:18:25 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/17 11:07:38 by vellery-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
+
+void	print_ant_path(uintmax_t index, char *path)
+{
+	char *str_ind;
+
+	check_malloc(str_ind = ft_uintmaxtoa(index, 10));
+	ft_putchar('L');
+	ft_putstr(str_ind);
+	ft_putchar('-');
+	ft_putstr(path);
+	ft_strdel(&str_ind);
+}
 
 void	clear_stepped(t_lemin *lemin)
 {
@@ -43,8 +55,9 @@ void	print_map(t_lemin *lemin)
 	out = lemin->out;
 	while (out)
 	{
-		printf("%s\n", out->str); // DELETE ME
+		write(1, out->str, ft_strlen(out->str));
+		ft_putchar('\n');
 		out = out->next;
 	}
-	printf("\n"); // DELETE ME
+	ft_putchar('\n');
 }

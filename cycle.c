@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/15 09:50:49 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/15 10:15:26 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/17 11:08:56 by vellery-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int		spread_ants(t_lemin *lemin, t_path *path, uintmax_t i)
 	return (i + j);
 }
 
-int		ant_step(t_lemin *lemin, int ind, int flag)
+int		ant_step(t_lemin *lemin, uintmax_t ind, int flag)
 {
 	t_path	*path;
 	t_ant	*ant;
@@ -59,8 +59,8 @@ int		ant_step(t_lemin *lemin, int ind, int flag)
 		ant->at_end = 1;
 	}
 	if (flag)
-		printf(" "); //DELETE ME
-	printf("L%d-%s", (int)ind + 1, path->path[ant->curr_node]->name); // DELETE ME
+		write(1, " ", 1);
+	print_ant_path(ind + 1, path->path[ant->curr_node]->name);
 	return (1);
 }
 
@@ -75,10 +75,9 @@ void	step(t_lemin *lemin)
 	{
 		end = 1;
 		flag = 0;
-		i = 0;
+		i = -1;
 		clear_stepped(lemin);
-		while (i < lemin->ant_count)
-		{
+		while (++i < lemin->ant_count)
 			if (!lemin->ants[i]->at_end)
 			{
 				if (ant_step(lemin, i, flag))
@@ -87,10 +86,8 @@ void	step(t_lemin *lemin)
 					end = 0;
 				}
 			}
-			i++;
-		}
 		if (!end)
-			printf("\n"); // DELETE ME
+			ft_putchar('\n');
 	}
 }
 

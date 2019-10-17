@@ -6,7 +6,7 @@
 #    By: ydavis <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/11/22 02:58:29 by ydavis            #+#    #+#              #
-#    Updated: 2019/10/10 21:16:14 by ydavis           ###   ########.fr        #
+#    Updated: 2019/10/17 11:05:39 by vellery-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,7 @@ SRC = get_next_line.c ft_lstaddend.c ft_count_sym.c ft_middlearr.c ft_realloc_c.
 	   ft_strdel.c ft_strdup.c ft_strequ.c ft_striter.c ft_striteri.c ft_strjoin.c \
 	   ft_strlcat.c ft_strlen.c ft_strmap.c ft_strmapi.c ft_strncat.c ft_strncmp.c \
 	   ft_strncpy.c ft_strnequ.c ft_strnew.c ft_strnstr.c ft_strrchr.c ft_strsplit.c \
-	   ft_strstr.c ft_strsub.c ft_strtrim.c ft_tolower.c ft_toupper.c
+	   ft_strstr.c ft_strsub.c ft_strtrim.c ft_tolower.c ft_toupper.c ft_uintmaxtoa.c
 OBJ = get_next_line.o ft_lstaddend.o ft_count_sym.o ft_middlearr.o ft_realloc_c.o ft_istraversed.o \
 	  ft_atoi.o ft_bzero.o ft_isalnum.o ft_isalpha.o ft_isascii.o ft_isdigit.o \
 	  ft_isprint.o ft_itoa.o ft_lstadd.o ft_lstdel.o ft_lstdelone.o ft_lstiter.o \
@@ -33,7 +33,7 @@ OBJ = get_next_line.o ft_lstaddend.o ft_count_sym.o ft_middlearr.o ft_realloc_c.
 	  ft_strdel.o ft_strdup.o ft_strequ.o ft_striter.o ft_striteri.o ft_strjoin.o \
 	  ft_strlcat.o ft_strlen.o ft_strmap.o ft_strmapi.o ft_strncat.o ft_strncmp.o \
 	  ft_strncpy.o ft_strnequ.o ft_strnew.o ft_strnstr.o ft_strrchr.o ft_strsplit.o \
-	  ft_strstr.o ft_strsub.o ft_strtrim.o ft_tolower.o ft_toupper.o
+	  ft_strstr.o ft_strsub.o ft_strtrim.o ft_tolower.o ft_toupper.o ft_uintmaxtoa.o
 HDR = libft.h
 NAME = libft.a
 LIBMAKE = ar cr

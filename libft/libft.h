@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/21 19:46:43 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/10 21:13:45 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/17 11:04:52 by vellery-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ typedef struct	s_list
 	size_t			content_size;
 	struct s_list	*next;
 }				t_list;
+char			*ft_uintmaxtoa(uintmax_t val, int base);
 int				get_next_line(const int fd, char **line);
 void			ft_lstaddend(t_list **alst, t_list *new);
 size_t			ft_count_sym(int n);
