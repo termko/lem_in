@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/15 09:31:13 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/15 09:38:06 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/17 13:28:03 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,8 +88,6 @@ void	max_flow(t_lemin *lemin, int flag)
 	{
 		init_visited(lemin);
 		clear_edges(lemin);
-		if (flag && check_flow(lemin))
-			return ;
 	}
 	if (!lemin->paths)
 		error_msg("ERROR\n");

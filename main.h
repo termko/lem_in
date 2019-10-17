@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/06 18:11:38 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/17 11:08:04 by vellery-         ###   ########.fr       */
+/*   Updated: 2019/10/17 13:35:10 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,4 +114,6 @@ void			free_out(t_lemin *lemin);
 void			free_ants(t_lemin *lemin);
 void			free_names(t_lemin *lemin);
 void			print_ant_path(uintmax_t index, char *path);
+int				step_cycle(t_lemin *lemin, int *first, int i);
+int				ant_step(t_lemin *lemin, uintmax_t ind, int flag);
 #endif

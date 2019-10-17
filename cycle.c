@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/15 09:50:49 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/17 11:08:56 by vellery-         ###   ########.fr       */
+/*   Updated: 2019/10/17 13:36:32 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,14 @@ int		spread_ants(t_lemin *lemin, t_path *path, uintmax_t i)
 	uintmax_t	j;
 
 	j = 0;
-	path->ants = path->ant_max;
-	while (j < path->ant_max)
+	while (path)
 	{
+		path->ants++;
 		lemin->ants[i + j]->path = path;
 		j++;
+		if (lemin->ant_count <= i + j)
+			return (i + j);
+		path = path->next;
 	}
 	return (i + j);
 }
@@ -59,7 +62,7 @@ int		ant_step(t_lemin *lemin, uintmax_t ind, int flag)
 		ant->at_end = 1;
 	}
 	if (flag)
-		write(1, " ", 1);
+		write(STDOUT_FILENO, " ", 1);
 	print_ant_path(ind + 1, path->path[ant->curr_node]->name);
 	return (1);
 }
@@ -69,23 +72,15 @@ void	step(t_lemin *lemin)
 	uintmax_t	i;
 	int			end;
 	int			flag;
+	int			first;
 
 	end = 0;
+	first = 0;
 	while (!end)
 	{
-		end = 1;
-		flag = 0;
-		i = -1;
+		i = first;
 		clear_stepped(lemin);
-		while (++i < lemin->ant_count)
-			if (!lemin->ants[i]->at_end)
-			{
-				if (ant_step(lemin, i, flag))
-				{
-					flag = 1;
-					end = 0;
-				}
-			}
+		end = step_cycle(lemin, &first, i);
 		if (!end)
 			ft_putchar('\n');
 	}
@@ -94,6 +89,7 @@ void	step(t_lemin *lemin)
 void	cycle(t_lemin *lemin)
 {
 	uintmax_t	i;
+	int			count;
 	t_path		*path;
 
 	i = 0;
@@ -104,10 +100,6 @@ void	cycle(t_lemin *lemin)
 			i = set_ants(lemin, path, i);
 		else
 			i = spread_ants(lemin, path, i);
-		if (!path->next)
-			path = lemin->paths;
-		else
-			path = path->next;
 	}
 	step(lemin);
 }
