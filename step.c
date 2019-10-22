@@ -6,13 +6,13 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/17 13:29:27 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/17 13:35:43 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/17 16:46:50 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-int		step_cycle(t_lemin *lemin, int *first, int i)
+int		step_cycle(t_lemin *lemin, int *first, uintmax_t i)
 {
 	int		flag;
 	int		end;

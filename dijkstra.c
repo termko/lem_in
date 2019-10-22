@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/15 09:24:38 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/15 09:48:00 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/22 18:33:42 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,20 @@ void	set_fastest(t_lemin *lemin, int i, int j, int dist)
 {
 	lemin->edges[j][j] = i + 1;
 	lemin->fastest[j] = dist;
+}
+
+void	clear_visited(t_lemin *lemin)
+{
+	int		i;
+
+	i = 0;
+	while (i < lemin->node_count)
+	{
+		if (!ft_strcmp(lemin->names[i], lemin->start_node->name) ||
+				!ft_strcmp(lemin->names[i], lemin->end_node->name))
+			lemin->visited[i] = 0;
+		i++;
+	}
 }
 
 t_path	*dijkstra(t_lemin *lemin)

@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/06 18:11:38 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/17 13:35:10 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/17 16:43:47 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,10 @@ void			free_out(t_lemin *lemin);
 void			free_ants(t_lemin *lemin);
 void			free_names(t_lemin *lemin);
 void			print_ant_path(uintmax_t index, char *path);
-int				step_cycle(t_lemin *lemin, int *first, int i);
+int				step_cycle(t_lemin *lemin, int *first, uintmax_t i);
 int				ant_step(t_lemin *lemin, uintmax_t ind, int flag);
+char			*realloc_str(char **str, int i);
+int				string_check(char **buff, char c);
+int				check_paths(t_lemin *lemin, uintmax_t i, uintmax_t j);
+void			recalculate_ants(t_lemin *lemin);
 #endif

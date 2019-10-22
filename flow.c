@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/15 09:31:13 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/17 13:28:03 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/18 17:58:43 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,23 +59,6 @@ void	check_bottlenecks(t_lemin *lemin)
 		}
 		i++;
 	}
-}
-
-int		check_flow(t_lemin *lemin)
-{
-	t_path		*path;
-	uintmax_t	flow;
-
-	flow = 0;
-	path = lemin->paths;
-	while (path)
-	{
-		flow += path->ant_max;
-		if (flow >= lemin->ant_count)
-			return (1);
-		path = path->next;
-	}
-	return (0);
 }
 
 void	max_flow(t_lemin *lemin, int flag)

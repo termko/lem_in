@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/15 07:44:01 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/15 07:49:21 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/22 18:42:50 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,8 @@ void	update_edges(t_lemin *lemin, char **split)
 		error_msg("ERROR\n");
 	i = node_index(lemin, split[0]);
 	j = node_index(lemin, split[1]);
+	if (lemin->edges[i][j] || lemin->edges[j][i])
+		error_msg("ERROR\n");
 	lemin->edges[i][j] = 1;
 	lemin->edges[j][i] = 1;
 }

@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/15 09:50:49 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/17 13:36:32 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/17 18:43:12 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,11 @@ int		spread_ants(t_lemin *lemin, t_path *path, uintmax_t i)
 	uintmax_t	j;
 
 	j = 0;
-	while (path)
+	while (i + j < lemin->ant_count)
 	{
 		path->ants++;
 		lemin->ants[i + j]->path = path;
 		j++;
-		if (lemin->ant_count <= i + j)
-			return (i + j);
-		path = path->next;
 	}
 	return (i + j);
 }
@@ -71,7 +68,6 @@ void	step(t_lemin *lemin)
 {
 	uintmax_t	i;
 	int			end;
-	int			flag;
 	int			first;
 
 	end = 0;
@@ -89,17 +85,22 @@ void	step(t_lemin *lemin)
 void	cycle(t_lemin *lemin)
 {
 	uintmax_t	i;
-	int			count;
 	t_path		*path;
 
 	i = 0;
-	path = lemin->paths;
 	while (i < lemin->ant_count)
 	{
-		if (lemin->ant_count - i < path->ant_max)
-			i = set_ants(lemin, path, i);
-		else
-			i = spread_ants(lemin, path, i);
+		path = lemin->paths;
+		while (path)
+		{
+			if (lemin->ant_count - i > path->ant_max - lemin->paths->ant_max)
+			{
+				path->ants++;
+				lemin->ants[i]->path = path;
+				i++;
+			}
+			path = path->next;
+		}
 	}
 	step(lemin);
 }

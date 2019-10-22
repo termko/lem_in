@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/15 09:02:54 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/15 09:09:04 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/22 18:34:02 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,17 +58,5 @@ void	clear_prev(t_lemin *lemin, int prev, int i)
 		if (j != i && lemin->edges[j][j] == prev + 1)
 			lemin->edges[j][j] = 0;
 		j++;
-	}
-}
-
-void	clear_visited(t_lemin *lemin)
-{
-	int i;
-
-	i = 0;
-	while (i < lemin->node_count)
-	{
-		lemin->visited[i] = 0;
-		i++;
 	}
 }
