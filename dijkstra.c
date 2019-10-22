@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/15 09:24:38 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/22 18:33:42 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/22 19:42:05 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,11 +58,26 @@ void	set_fastest(t_lemin *lemin, int i, int j, int dist)
 void	clear_visited(t_lemin *lemin)
 {
 	int		i;
+	int		j;
+	int		in;
+	int		out;
 
 	i = 0;
 	while (i < lemin->node_count)
 	{
-		if (!ft_strcmp(lemin->names[i], lemin->start_node->name) ||
+		in = 0;
+		out = 0;
+		j = 0;
+		while (j < lemin->node_count)
+		{
+			if (lemin->edges[i][j] == -1 || lemin->edges[j][i] == -1)
+				in = 1;
+			if (lemin->edges[i][j] == 1 || lemin->edges[j][i] == 1)
+				out = 1;
+			j++;
+		}
+		if (!in || !out ||
+				!ft_strcmp(lemin->names[i], lemin->start_node->name) ||
 				!ft_strcmp(lemin->names[i], lemin->end_node->name))
 			lemin->visited[i] = 0;
 		i++;

@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/15 10:01:45 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/22 18:51:34 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/22 19:25:36 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,8 @@ int		check_out(t_out *out)
 	{
 		if (out->str[1] == '#')
 		{
+			if (out->str[2] == '#')
+				return (1);
 			if (!ft_strcmp("start", (out->str) + 2) ||
 					!ft_strcmp("end", (out->str) + 2))
 				return (1);

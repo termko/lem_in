@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/15 09:31:13 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/18 17:58:43 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/22 19:32:05 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ void	max_flow(t_lemin *lemin, int flag)
 	init_visited(lemin);
 	while (dijkstra(lemin))
 	{
-		init_visited(lemin);
+		clear_visited(lemin);
 		clear_edges(lemin);
 	}
 	if (!lemin->paths)

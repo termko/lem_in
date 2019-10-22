@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/15 09:09:47 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/15 09:20:25 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/22 19:24:49 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ t_path	*backtrack(t_lemin *lemin)
 	int		j;
 	int		prev;
 
-	clear_visited(lemin);
 	count = count_backtrack(lemin, lemin->end_index);
 	if (count < 0)
 		return (NULL);
