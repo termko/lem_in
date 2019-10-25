@@ -63,9 +63,6 @@ void	check_bottlenecks(t_lemin *lemin)
 
 void	max_flow(t_lemin *lemin, int flag)
 {
-	int		ind;
-
-	ind = lemin->start_index;
 	init_visited(lemin);
 	while (dijkstra(lemin))
 	{
