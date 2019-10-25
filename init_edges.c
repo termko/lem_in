@@ -63,8 +63,8 @@ void	update_edges(t_lemin *lemin, char **split)
 		error_msg("ERROR\n");
 	i = node_index(lemin, split[0]);
 	j = node_index(lemin, split[1]);
-	if (lemin->edges[i][j] || lemin->edges[j][i])
-		error_msg("ERROR\n");
+//	if (lemin->edges[i][j] || lemin->edges[j][i])
+//		error_msg("ERROR\n");
 	lemin->edges[i][j] = 1;
 	lemin->edges[j][i] = 1;
 }
