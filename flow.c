@@ -90,6 +90,7 @@ void	max_flow(t_lemin *lemin, int flag)
 		clear_edges(lemin);
 		if (!check && best_flow(lemin))
 			return ;
+		check = 1;
 	}
 	if (!lemin->paths)
 		error_msg("ERROR\n");
