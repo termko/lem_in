@@ -61,13 +61,35 @@ void	check_bottlenecks(t_lemin *lemin)
 	}
 }
 
+int	best_flow(t_lemin *lemin)
+{
+	uintmax_t	count;
+	t_path		*path;
+
+	path = lemin->paths;
+	count = 0;
+	while (path)
+	{
+		count += path->ant_max;
+		if (count >= lemin->ant_count)
+			return (1);
+		path = path->next;
+	}
+	return (0);
+}
+
 void	max_flow(t_lemin *lemin, int flag)
 {
+	int	check;
+
+	check = 0;
 	init_visited(lemin);
 	while (dijkstra(lemin))
 	{
 		clear_visited(lemin);
 		clear_edges(lemin);
+		if (!check && best_flow(lemin))
+			return ;
 	}
 	if (!lemin->paths)
 		error_msg("ERROR\n");
