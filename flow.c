@@ -71,7 +71,7 @@ int	best_flow(t_lemin *lemin)
 	while (path)
 	{
 		count += path->ant_max;
-		if (count >= lemin->ant_count)
+		if (count > lemin->ant_count)
 			return (1);
 		path = path->next;
 	}
