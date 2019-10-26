@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/06 18:11:38 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/17 16:43:47 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/26 17:49:37 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ void			error_msg(char *msg);
 int				split_check(char **split, int count);
 void			split_free(char ***split);
 int				coord_check(t_v2 loc, char **split);
-void			update_edges(t_lemin *lemin, char **split);
+void			update_edges(t_lemin *lemin, char *start, char *end);
 void			fill_names(t_lemin *lemin);
 void			read_map(t_lemin *lemin);
 void			fill_names(t_lemin *lemin);

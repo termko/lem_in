@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/15 07:09:40 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/17 18:55:13 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/26 17:59:24 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,14 @@ void	check_malloc(void *addr)
 	if (!addr)
 	{
 		ft_putstr_fd("Unexpected error with malloc! Exiting...\n",
-				STDOUT_FILENO);
+				STDERR_FILENO);
 		exit(1);
 	}
 }
 
 void	error_msg(char *msg)
 {
-	ft_putstr_fd(msg, STDOUT_FILENO);
+	ft_putstr_fd(msg, STDERR_FILENO);
 	exit(1);
 }
 

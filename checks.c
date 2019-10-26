@@ -6,7 +6,7 @@
 /*   By: ydavis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/15 07:50:12 by ydavis            #+#    #+#             */
-/*   Updated: 2019/10/15 07:58:23 by ydavis           ###   ########.fr       */
+/*   Updated: 2019/10/26 17:57:29 by ydavis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,22 +77,42 @@ int		check_second(t_lemin *lemin, char *buff)
 	return (0);
 }
 
-int		check_third(t_lemin *lemin, char *buff)
+char	*find_str(t_lemin *lemin, char *str)
 {
-	char **split;
+	t_node	*node;
+	char	*ret;
 
-	if (check_comment(lemin, buff))
-		return (0);
-	check_malloc(split = ft_strsplit(buff, '-'));
-	if (split_check(split, 2))
+	node = lemin->nodes;
+	ret = NULL;
+	while (node)
 	{
-		split_free(&split);
-		return (1);
+		if ((ret = ft_strstr(str, node->name)) == str)
+		{
+			ret = node->name;
+			break ;
+		}
+		node = node->next;
 	}
-	if (!ft_strcmp(split[0], split[1]))
+	if (!node)
 		error_msg("ERROR\n");
+	return (ret);
+}
+
+
+int		check_third(t_lemin *lemin, char *str)
+{
+	char	*start;
+	char	*end;
+
+	if (check_comment(lemin, str))
+		return (0);
+	start = find_str(lemin, str);
+	str += ft_strlen(start);
+	if (*str != '-')
+		error_msg("ERROR\n");
+	str++;
+	end = find_str(lemin, str);
 	lemin->link_count++;
-	update_edges(lemin, split);
-	split_free(&split);
+	update_edges(lemin, start, end);
 	return (0);
 }
